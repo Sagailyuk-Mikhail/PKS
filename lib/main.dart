@@ -71,7 +71,7 @@ class LoginPage extends StatelessWidget {
                                 color: Colors.grey,
                                 fontSize: 20,
                               ),
-                              hintText: "###########",
+                              hintText: "*********",
                               hintStyle: const TextStyle(
                                 color: Colors.grey,
                                 fontSize: 20,
