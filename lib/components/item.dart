@@ -9,19 +9,6 @@ class FearRoomWidget extends StatelessWidget {
     required this.fearRoom,
   });
 
-  Color getBackgroundColor() {
-    switch (fearRoom.type) {
-      case 'Фобия':
-        return const Color.fromARGB(255, 255, 69, 0).withOpacity(0.75); // Оранжевый
-      case 'Тревога':
-        return const Color.fromARGB(255, 255, 215, 0).withOpacity(0.75); // Желтый
-      case 'Паника':
-        return const Color.fromARGB(255, 255, 0, 0).withOpacity(0.75); // Красный
-      default:
-        return Colors.black.withOpacity(0.5);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -29,57 +16,32 @@ class FearRoomWidget extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16.0),
-          color: getBackgroundColor(),
-          border: Border.all(color: Colors.white, width: 2),
+          border: Border.all(color: Colors.black, width: 2),
         ),
         width: double.infinity,
         height: MediaQuery.of(context).size.height * 0.4,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
+              const SizedBox(height: 20),
               Center(
                 child: Text(
-                  fearRoom.title,
+                  "Квест комната: ${fearRoom.title}",
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 20,
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
-              Text(
-                fearRoom.type,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Image.network(fearRoom.imageUrl, height: 100),
-              const SizedBox(height: 10),
-              Text(
-                "Интенсивность: ${fearRoom.intensity}",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                "Триггер: ${fearRoom.trigger}",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                "Симптомы: ${fearRoom.symptoms}",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
+              const SizedBox(height: 20),
+              Expanded(
+                child: Center(
+                  child: Image.network(
+                    fearRoom.imageUrl,
+                    height: MediaQuery.of(context).size.height * 0.28, // 70% от высоты карточки
+                  ),
                 ),
               ),
             ],
