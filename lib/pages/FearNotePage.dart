@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../models/Note.dart';
 
-class FearRoomPage extends StatelessWidget {
+class FearRoomDetailPage extends StatelessWidget {
   final FearRoom fearRoom;
 
-  const FearRoomPage({super.key, required this.fearRoom});
+  const FearRoomDetailPage({super.key, required this.fearRoom});
 
   @override
   Widget build(BuildContext context) {
@@ -13,27 +14,38 @@ class FearRoomPage extends StatelessWidget {
         title: Text(fearRoom.title),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Text(
-                  fearRoom.title,
-                  style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CachedNetworkImage(
+              imageUrl: fearRoom.imageUrl,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+              errorWidget: (context, url, error) => Center(child: Icon(Icons.error)),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    fearRoom.title,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    fearRoom.fullInfo,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Тип: ${fearRoom.type}',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              Image.network(fearRoom.imageUrl),
-              const SizedBox(height: 16),
-              Text(
-                fearRoom.description,
-                style: const TextStyle(fontSize: 18),
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

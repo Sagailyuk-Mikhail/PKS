@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Сагайлюк Михаил Александрович ЭФБО-03-22',
+      title: 'Квест комнаты',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
