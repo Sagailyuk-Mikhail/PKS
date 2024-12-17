@@ -5,40 +5,76 @@ import '../pages/FearNotePage.dart';
 import '../pages/AddFearRoomPage.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final Set<FearRoom> likedGames;
+  final Function(FearRoom) onLikedToggle;
+
+  const HomePage({
+    Key? key,
+    required this.likedGames,
+    required this.onLikedToggle,
+  }) : super(key: key);
 
   @override
-  HomePageState createState() => HomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class HomePageState extends State<HomePage> {
-  final List<FearRoom> fearRooms = [
+class _HomePageState extends State<HomePage> {
+  List<FearRoom> fearRooms = [
     FearRoom(
       title: 'Арахнофобия',
       description: 'Испытайте свои силы в комнате, полной пауков. Ваша задача — найти выход, преодолевая страх перед этими существами.',
-      imageUrl: 'https://avatars.mds.yandex.net/get-entity_search/114969/993382517/SUx182_2x',
+      imageUrl: 'https://avatars.mds.yandex.net/get-shedevrum/13672789/img_4fd2299ebc0711ef91b3eac5d837a6da/orig',
       fullInfo: 'Испытайте свои силы в комнате, полной пауков. Ваша задача — найти выход, преодолевая страх перед этими существами.',
       type: 'Эскейп-румы',
     ),
     FearRoom(
       title: 'Клаустрофобия',
       description: 'Попробуйте выбраться из замкнутого пространства, преодолевая страх перед теснотой и нехваткой воздуха.',
-      imageUrl: 'https://s0.rbk.ru/v6_top_pics/media/img/6/05/756482987819056.jpg',
+      imageUrl: 'https://avatars.mds.yandex.net/get-shedevrum/15296012/img_5fce4c4abc0811efad090e7f2f591fdc/orig',
       fullInfo: 'Попробуйте выбраться из замкнутого пространства, преодолевая страх перед теснотой и нехваткой воздуха.',
       type: 'Квесты в реальности',
     ),
     FearRoom(
       title: 'Агорафобия',
       description: 'Проверьте свои нервы в открытом пространстве, где вам нужно найти выход, преодолевая страх перед пустотой.',
-      imageUrl: 'https://avatars.mds.yandex.net/i?id=4807b2e09684e5d827bfd695cd21b593890cd00cd71693f4-12995656-images-thumbs&n=13',
+      imageUrl: 'https://avatars.mds.yandex.net/get-shedevrum/15247898/img_e2cfa4bebc0811ef91b3eac5d837a6da/orig', //
       fullInfo: 'Проверьте свои нервы в открытом пространстве, где вам нужно найти выход, преодолевая страх перед пустотой.',
       type: 'Перформансы',
     ),
+    FearRoom(
+      title: 'Безумие Алисы',
+      description: 'Погрузитесь в мир загадок и иллюзий с квестом "Безумие Алисы", где границы реальности размыты.',
+      imageUrl: 'https://avatars.mds.yandex.net/get-shedevrum/14794476/img_2ac6a84bbc0911ef90fb7a1fca1a5260/orig', // Вставьте URL изображения
+      fullInfo: 'Погрузитесь в мир загадок и иллюзий с квестом "Безумие Алисы", где границы реальности размыты.',
+      type: 'Интерактивные квесты',
+    ),
+    FearRoom(
+      title: 'Пиратский клад',
+      description: 'Отправьтесь в приключение по поиску пиратского клада с картой и головоломками.',
+      imageUrl: 'https://avatars.mds.yandex.net/get-shedevrum/15170052/img_908e4fd5bc0911efac8602fc262e3b4d/orig',
+      fullInfo: 'Отправьтесь в приключение по поиску пиратского клада с картой и головоломками.',
+      type: 'Приключенческие квесты',
+    ),
   ];
 
-  void _addFearRoom(FearRoom fearRoom) {
+  void _navigateToAddFearRoomPage(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddFearRoomPage(onFearRoomAdded: addNewFearRoom),
+      ),
+    );
+
+    if (result != null && result.isNotEmpty) {
+      setState(() {
+        fearRooms.add(result);
+      });
+    }
+  }
+
+  void addNewFearRoom(FearRoom newFearRoom) {
     setState(() {
-      fearRooms.add(fearRoom);
+      fearRooms.add(newFearRoom);
     });
   }
 
@@ -46,32 +82,6 @@ class HomePageState extends State<HomePage> {
     setState(() {
       fearRooms.removeAt(index);
     });
-  }
-
-  Future<bool> _confirmDelete(BuildContext context) async {
-    return await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Подтверждение удаления'),
-          content: const Text('Вы уверены, что хотите удалить эту позицию?'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Нет'),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-            ),
-            TextButton(
-              child: const Text('Да'),
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-            ),
-          ],
-        );
-      },
-    ) ?? false;
   }
 
   @override
@@ -82,41 +92,47 @@ class HomePageState extends State<HomePage> {
       ),
       body: fearRooms.isEmpty
           ? const Center(child: Text('Пока что тут пусто, добавьте что-нибудь!'))
-          : ListView.builder(
+          : GridView.builder(
+        padding: const EdgeInsets.all(8.0),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 8.0,
+          mainAxisSpacing: 8.0,
+          childAspectRatio: 0.6,
+        ),
         itemCount: fearRooms.length,
         itemBuilder: (context, index) {
           final fearRoom = fearRooms[index];
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0), // Увеличиваем отступы между карточками
-            child: FearRoomWidget(
-              fearRoom: fearRoom,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => FearRoomDetailPage(fearRoom: fearRoom),
+          return FearRoomWidget(
+            fearRoom: fearRoom,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FearRoomDetailPage(
+                    fearRoom: fearRoom,
+                    onDelete: () {
+                      _deleteFearRoom(index);
+                      Navigator.pop(context);
+                    },
                   ),
-                );
-              },
-              onDelete: () async {
-                bool confirm = await _confirmDelete(context);
-                if (confirm) {
-                  _deleteFearRoom(index);
-                }
-              },
-            ),
+                ),
+              );
+            },
+            onFavoriteToggle: () {
+              setState(() {
+                fearRoom.isFavorite = !fearRoom.isFavorite;
+              });
+              widget.onLikedToggle(fearRoom);
+            },
+            onDelete: () {
+              _deleteFearRoom(index);
+            },
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddFearRoomPage(onFearRoomAdded: _addFearRoom),
-            ),
-          );
-        },
+        onPressed: () => _navigateToAddFearRoomPage(context),
         child: const Icon(Icons.add),
       ),
     );

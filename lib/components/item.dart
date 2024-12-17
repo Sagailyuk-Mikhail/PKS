@@ -4,12 +4,14 @@ import '../models/Note.dart';
 class FearRoomWidget extends StatelessWidget {
   final FearRoom fearRoom;
   final VoidCallback onTap;
+  final VoidCallback onFavoriteToggle;
   final VoidCallback onDelete;
 
   const FearRoomWidget({
     super.key,
     required this.fearRoom,
     required this.onTap,
+    required this.onFavoriteToggle,
     required this.onDelete,
   });
 
@@ -26,7 +28,7 @@ class FearRoomWidget extends StatelessWidget {
       case 'Морфеус':
         return Icons.visibility_off;
       case 'Хоррор-квесты':
-        return Icons.warning; // Заменим на другую иконку
+        return Icons.warning;
       case 'Виртуальные квесты':
         return Icons.videogame_asset;
       default:
@@ -39,57 +41,81 @@ class FearRoomWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        elevation: 4.0, // Добавляем тень
+        elevation: 4,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0), // Закругленные углы
+          borderRadius: BorderRadius.circular(16.0),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
-              child: Image.network(
-                fearRoom.imageUrl,
-                fit: BoxFit.cover,
-                height: 200, // Высота изображения
-                width: double.infinity,
-              ),
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
+                  child: Image.network(
+                    fearRoom.imageUrl,
+                    height: 150, // Увеличена высота изображения
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return const Center(child: CircularProgressIndicator());
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Center(child: Icon(Icons.error));
+                    },
+                  ),
+                ),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: IconButton(
+                    icon: Icon(
+                      fearRoom.isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: fearRoom.isFavorite ? Colors.red : Colors.grey,
+                    ),
+                    onPressed: onFavoriteToggle,
+                  ),
+                ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         fearRoom.title,
-                        style: Theme.of(context).textTheme.headlineSmall,
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontSize: 16),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: onDelete,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    fearRoom.description,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(getIconForType(fearRoom.type)),
-                      const SizedBox(width: 4),
+                      const SizedBox(height: 8),
                       Text(
-                        fearRoom.type,
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        fearRoom.description,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 12),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 3,
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(getIconForType(fearRoom.type)),
+                          const SizedBox(width: 4),
+                          Expanded( // Используем Expanded для предотвращения переполнения
+                            child: Text(
+                              fearRoom.type,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 12),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
           ],
