@@ -16,6 +16,7 @@ class AddFearRoomPageState extends State<AddFearRoomPage> {
   final _descriptionController = TextEditingController();
   final _imageUrlController = TextEditingController();
   final _fullInfoController = TextEditingController();
+  final _costController = TextEditingController();
   final _typeController = TextEditingController();
 
   @override
@@ -71,6 +72,17 @@ class AddFearRoomPageState extends State<AddFearRoomPage> {
                 },
               ),
               TextFormField(
+                controller: _costController,
+                decoration: const InputDecoration(labelText: 'Цена'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Пожалуйста, введите цену';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
                 controller: _typeController,
                 decoration: const InputDecoration(labelText: 'Тип квест-комнаты'),
                 validator: (value) {
@@ -89,6 +101,7 @@ class AddFearRoomPageState extends State<AddFearRoomPage> {
                       description: _descriptionController.text,
                       imageUrl: _imageUrlController.text,
                       fullInfo: _fullInfoController.text,
+                      cost: int.parse(_costController.text),
                       type: _typeController.text,
                     );
                     widget.onFearRoomAdded(newFearRoom);

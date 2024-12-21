@@ -4,8 +4,14 @@ import '../models/Note.dart';
 class FearRoomDetailPage extends StatelessWidget {
   final FearRoom fearRoom;
   final VoidCallback onDelete;
+  final VoidCallback onAddToCart;
 
-  const FearRoomDetailPage({super.key, required this.fearRoom, required this.onDelete});
+  const FearRoomDetailPage({
+    super.key,
+    required this.fearRoom,
+    required this.onDelete,
+    required this.onAddToCart,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +21,32 @@ class FearRoomDetailPage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: onDelete,
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('Подтверждение'),
+                    content: const Text('Вы уверены, что хотите удалить этот товар?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Отмена'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          onDelete();
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Удалить'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
           ),
         ],
       ),
@@ -52,6 +83,16 @@ class FearRoomDetailPage extends StatelessWidget {
                   Text(
                     'Тип: ${fearRoom.type}',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 14),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Цена: ${fearRoom.cost} руб.',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 14),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: onAddToCart,
+                    child: const Text('Добавить в корзину'),
                   ),
                 ],
               ),

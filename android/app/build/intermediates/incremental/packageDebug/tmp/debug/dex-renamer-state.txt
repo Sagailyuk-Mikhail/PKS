@@ -1,4 +1,4 @@
-#Tue Dec 17 03:18:01 MSK 2024
+#Sun Dec 22 01:01:43 MSK 2024
 base.0=C\:\\Users\\sagai\\StudioProjects\\PKS\\android\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
 base.1=C\:\\Users\\sagai\\StudioProjects\\PKS\\android\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
 base.2=C\:\\Users\\sagai\\StudioProjects\\PKS\\android\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\1\\classes.dex

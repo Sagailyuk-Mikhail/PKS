@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import '../components/item.dart';
 import '../models/Note.dart';
+import '../components/item.dart';
 import '../pages/FearNotePage.dart';
 
 class LikedPage extends StatefulWidget {
   final Set<FearRoom> likedGames;
   final Function(FearRoom) onLikedToggle;
+  final Function(FearRoom) onAddToCart;
 
   const LikedPage({
     Key? key,
     required this.likedGames,
     required this.onLikedToggle,
+    required this.onAddToCart,
   }) : super(key: key);
 
   @override
@@ -39,7 +41,7 @@ class _LikedPageState extends State<LikedPage> {
           crossAxisCount: 2,
           crossAxisSpacing: 8.0,
           mainAxisSpacing: 8.0,
-          childAspectRatio: 0.6,
+          childAspectRatio: 0.7,
         ),
         itemCount: likedGamesList.length,
         itemBuilder: (context, index) {
@@ -56,6 +58,9 @@ class _LikedPageState extends State<LikedPage> {
                       _deleteFearRoom(fearRoom);
                       Navigator.pop(context);
                     },
+                    onAddToCart: () {
+                      widget.onAddToCart(fearRoom);
+                    },
                   ),
                 ),
               );
@@ -63,8 +68,8 @@ class _LikedPageState extends State<LikedPage> {
             onFavoriteToggle: () {
               widget.onLikedToggle(fearRoom);
             },
-            onDelete: () {
-              _deleteFearRoom(fearRoom);
+            onAddToCart: () {
+              widget.onAddToCart(fearRoom);
             },
           );
         },

@@ -5,14 +5,14 @@ class FearRoomWidget extends StatelessWidget {
   final FearRoom fearRoom;
   final VoidCallback onTap;
   final VoidCallback onFavoriteToggle;
-  final VoidCallback onDelete;
+  final VoidCallback onAddToCart;
 
   const FearRoomWidget({
     super.key,
     required this.fearRoom,
     required this.onTap,
     required this.onFavoriteToggle,
-    required this.onDelete,
+    required this.onAddToCart,
   });
 
   IconData getIconForType(String type) {
@@ -54,7 +54,7 @@ class FearRoomWidget extends StatelessWidget {
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
                   child: Image.network(
                     fearRoom.imageUrl,
-                    height: 150, // Увеличена высота изображения
+                    height: 150,
                     width: double.infinity,
                     fit: BoxFit.cover,
                     loadingBuilder: (context, child, loadingProgress) {
@@ -104,7 +104,7 @@ class FearRoomWidget extends StatelessWidget {
                         children: [
                           Icon(getIconForType(fearRoom.type)),
                           const SizedBox(width: 4),
-                          Expanded( // Используем Expanded для предотвращения переполнения
+                          Expanded(
                             child: Text(
                               fearRoom.type,
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 12),
@@ -112,6 +112,11 @@ class FearRoomWidget extends StatelessWidget {
                             ),
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 8),
+                      ElevatedButton(
+                        onPressed: onAddToCart,
+                        child: const Text('Добавить в корзину'),
                       ),
                     ],
                   ),

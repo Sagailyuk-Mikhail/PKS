@@ -4,6 +4,8 @@ class FearRoom {
   final String imageUrl;
   final String fullInfo;
   final String type;
+  final int cost;
+  int amount;
   bool isFavorite;
 
   FearRoom({
@@ -12,6 +14,8 @@ class FearRoom {
     required this.imageUrl,
     required this.fullInfo,
     required this.type,
+    required this.cost,
+    this.amount = 0,
     this.isFavorite = false,
   });
 }
