@@ -1,15 +1,16 @@
-# pks4
+# pks6
 # Сагайлюк Михаил Александрович ЭФБО-03-22
 
 Главная страница
 
-![Снимок экрана 2024-12-17 032946](https://github.com/user-attachments/assets/80c597cc-b75a-42ad-9eff-54020dbf304e)
+![Снимок экрана 2024-12-22 015812](https://github.com/user-attachments/assets/2c4f993c-c7cd-4af3-8e33-b98a8e77b42f)
+
+Корзина
+
+![Снимок экрана 2024-12-22 015728](https://github.com/user-attachments/assets/3ee193bd-f672-452c-888f-37d492e69488)
 
 
-Избранное
+Удаление
 
-![Снимок экрана 2024-12-17 032959](https://github.com/user-attachments/assets/af8cfd42-6297-40cb-8742-48f732850ddd)
+![Снимок экрана 2024-12-22 015738](https://github.com/user-attachments/assets/d2ab9e8d-7457-47b6-b6f6-9aa02178e714)
 
-Профиль
-
-![Снимок экрана 2024-12-17 033012](https://github.com/user-attachments/assets/c198dc99-27e8-432e-96a7-159025299eeb)
