@@ -26,6 +26,7 @@ MERGED from C:\Users\sagai\StudioProjects\PKS\android\app\src\main\AndroidManife
 INJECTED from C:\Users\sagai\StudioProjects\PKS\android\app\src\debug\AndroidManifest.xml:1:1-7:12
 INJECTED from C:\Users\sagai\StudioProjects\PKS\android\app\src\debug\AndroidManifest.xml:1:1-7:12
 INJECTED from C:\Users\sagai\StudioProjects\PKS\android\app\src\debug\AndroidManifest.xml:1:1-7:12
+MERGED from [:fluttertoast] C:\Users\sagai\AppData\Local\Pub\Cache\hosted\pub.dev\fluttertoast-8.2.10\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.fragment:fragment:1.7.1] C:\Users\sagai\.gradle\caches\transforms-3\2bc6fff037154bcf5623629230e86e5e\transformed\fragment-1.7.1\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.window:window:1.2.0] C:\Users\sagai\.gradle\caches\transforms-3\a891806a8410a4e152fcdae4c27768d1\transformed\window-1.2.0\AndroidManifest.xml:17:1-31:12
 MERGED from [androidx.window:window-java:1.2.0] C:\Users\sagai\.gradle\caches\transforms-3\0742f8b436d283680e309b2b441720e9\transformed\window-java-1.2.0\AndroidManifest.xml:17:1-21:12
@@ -80,6 +81,8 @@ uses-sdk
 INJECTED from C:\Users\sagai\StudioProjects\PKS\android\app\src\debug\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\sagai\StudioProjects\PKS\android\app\src\debug\AndroidManifest.xml
 INJECTED from C:\Users\sagai\StudioProjects\PKS\android\app\src\debug\AndroidManifest.xml
+MERGED from [:fluttertoast] C:\Users\sagai\AppData\Local\Pub\Cache\hosted\pub.dev\fluttertoast-8.2.10\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
+MERGED from [:fluttertoast] C:\Users\sagai\AppData\Local\Pub\Cache\hosted\pub.dev\fluttertoast-8.2.10\android\build\intermediates\merged_manifest\debug\AndroidManifest.xml:5:5-44
 MERGED from [androidx.fragment:fragment:1.7.1] C:\Users\sagai\.gradle\caches\transforms-3\2bc6fff037154bcf5623629230e86e5e\transformed\fragment-1.7.1\AndroidManifest.xml:5:5-44
 MERGED from [androidx.fragment:fragment:1.7.1] C:\Users\sagai\.gradle\caches\transforms-3\2bc6fff037154bcf5623629230e86e5e\transformed\fragment-1.7.1\AndroidManifest.xml:5:5-44
 MERGED from [androidx.window:window:1.2.0] C:\Users\sagai\.gradle\caches\transforms-3\a891806a8410a4e152fcdae4c27768d1\transformed\window-1.2.0\AndroidManifest.xml:20:5-44

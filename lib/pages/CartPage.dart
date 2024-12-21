@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import '../models/Note.dart';
 
 class CartPage extends StatefulWidget {
@@ -37,6 +38,46 @@ class _CartPageState extends State<CartPage> {
     return widget.cartItems.fold(0, (sum, item) => sum + (item.cost * item.amount));
   }
 
+  void _showDeleteToast(String message) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+  }
+
+  void _confirmDelete(FearRoom fearRoom) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Подтверждение удаления'),
+          content: Text('Вы уверены, что хотите удалить "${fearRoom.title}" из корзины?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Отмена'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Закрыть диалог
+              },
+            ),
+            TextButton(
+              child: const Text('Удалить'),
+              onPressed: () {
+                widget.onDeleteFromCart(fearRoom); // Удалить товар
+                _showDeleteToast('Товар "${fearRoom.title}" удален из корзины');
+                Navigator.of(context).pop(); // Закрыть диалог
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final cartItemsList = widget.cartItems.toList();
@@ -59,7 +100,8 @@ class _CartPageState extends State<CartPage> {
                     children: [
                       SlidableAction(
                         onPressed: (context) {
-                          widget.onDeleteFromCart(fearRoom);
+                          // Показать диалог подтверждения удаления
+                          _confirmDelete(fearRoom);
                         },
                         backgroundColor: Colors.red,
                         foregroundColor: Colors.white,

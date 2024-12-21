@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.pks1.app-mergeDebugResources-22:/values-mr/values-mr.xml",
+            "outputFile": "com.example.pks1.app-mergeDebugResources-23:/values-mr/values-mr.xml",
             "map": [
                 {
                     "source": "C:\\Users\\sagai\\.gradle\\caches\\transforms-3\\eb175a205a3081c2bde0a5cc27a4c4f3\\transformed\\core-1.13.1\\res\\values-mr\\values-mr.xml",

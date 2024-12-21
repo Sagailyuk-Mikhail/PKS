@@ -94,6 +94,27 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _navigateToCart() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CartPage(
+          cartItems: widget.cartItems,
+          onRemoveFromCart: (item) {
+            setState(() {
+              widget.cartItems.remove(item);
+            });
+          },
+          onDeleteFromCart: (item) {
+            setState(() {
+              widget.cartItems.remove(item);
+            });
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,26 +125,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               IconButton(
                 icon: const Icon(Icons.shopping_cart),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CartPage(
-                        cartItems: widget.cartItems,
-                        onRemoveFromCart: (item) {
-                          setState(() {
-                            widget.cartItems.remove(item);
-                          });
-                        },
-                        onDeleteFromCart: (item) {
-                          setState(() {
-                            widget.cartItems.remove(item);
-                          });
-                        },
-                      ),
-                    ),
-                  );
-                },
+                onPressed: _navigateToCart, // Переход на страницу корзины
               ),
               if (widget.cartItems.isNotEmpty)
                 Positioned(
