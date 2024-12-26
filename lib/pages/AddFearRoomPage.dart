@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/Note.dart';
+import '../api.dart';
+import '../models/FearRoom.dart';
 
 class AddFearRoomPage extends StatefulWidget {
   final Function(FearRoom) onFearRoomAdded;
@@ -7,111 +8,130 @@ class AddFearRoomPage extends StatefulWidget {
   const AddFearRoomPage({super.key, required this.onFearRoomAdded});
 
   @override
-  AddFearRoomPageState createState() => AddFearRoomPageState();
+  State<AddFearRoomPage> createState() => _AddFearRoomPageState();
 }
 
-class AddFearRoomPageState extends State<AddFearRoomPage> {
-  final _formKey = GlobalKey<FormState>();
+class _AddFearRoomPageState extends State<AddFearRoomPage> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _imageUrlController = TextEditingController();
   final _fullInfoController = TextEditingController();
   final _costController = TextEditingController();
-  final _typeController = TextEditingController();
+  String _selectedType = 'Эскейп-румы';
+
+  void _addFearRoom() async {
+    final title = _titleController.text;
+    final description = _descriptionController.text;
+    final imageUrl = _imageUrlController.text;
+    final fullInfo = _fullInfoController.text;
+    final cost = int.tryParse(_costController.text) ?? 0;
+
+    if (title.isNotEmpty && description.isNotEmpty && imageUrl.isNotEmpty && fullInfo.isNotEmpty && cost > 0) {
+      final newItem = FearRoom(
+        title: title,
+        description: description,
+        imageUrl: imageUrl,
+        fullInfo: fullInfo,
+        cost: cost,
+        type: _selectedType,
+        isFavorite: false,
+      );
+
+      try {
+        await ApiService().addFearRoom(newItem);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Элемент успешно добавлен!'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+        _titleController.clear();
+        _descriptionController.clear();
+        _imageUrlController.clear();
+        _fullInfoController.clear();
+        _costController.clear();
+        Navigator.of(context).pop(newItem);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Ошибка добавления элемента: $e'),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Пожалуйста, заполните все поля'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Добавить квест комнату'),
+        title: const Text('Добавить комнату страха'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Название'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Пожалуйста, введите название';
-                  }
-                  return null;
-                },
+        child: Column(
+          children: [
+            TextField(
+              controller: _titleController,
+              decoration: const InputDecoration(
+                labelText: 'Название',
               ),
-              TextFormField(
-                controller: _imageUrlController,
-                decoration: const InputDecoration(labelText: 'Изображение в формате URL'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Пожалуйста, введите URL изображения';
-                  }
-                  return null;
-                },
+            ),
+            TextField(
+              controller: _descriptionController,
+              decoration: const InputDecoration(
+                labelText: 'Описание',
               ),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Краткое описание'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Пожалуйста, введите краткое описание';
-                  }
-                  return null;
-                },
+            ),
+            TextField(
+              controller: _imageUrlController,
+              decoration: const InputDecoration(
+                labelText: 'URL изображения',
               ),
-              TextFormField(
-                controller: _fullInfoController,
-                decoration: const InputDecoration(labelText: 'Полное описание'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Пожалуйста, введите полное описание';
-                  }
-                  return null;
-                },
+            ),
+            TextField(
+              controller: _fullInfoController,
+              decoration: const InputDecoration(
+                labelText: 'Полная информация',
               ),
-              TextFormField(
-                controller: _costController,
-                decoration: const InputDecoration(labelText: 'Цена'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Пожалуйста, введите цену';
-                  }
-                  return null;
-                },
+            ),
+            TextField(
+              controller: _costController,
+              decoration: const InputDecoration(
+                labelText: 'Стоимость',
               ),
-              TextFormField(
-                controller: _typeController,
-                decoration: const InputDecoration(labelText: 'Тип квест-комнаты'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Пожалуйста, введите тип квест-комнаты';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    final newFearRoom = FearRoom(
-                      title: _titleController.text,
-                      description: _descriptionController.text,
-                      imageUrl: _imageUrlController.text,
-                      fullInfo: _fullInfoController.text,
-                      cost: int.parse(_costController.text),
-                      type: _typeController.text,
-                    );
-                    widget.onFearRoomAdded(newFearRoom);
-                    Navigator.of(context).pop();
-                  }
-                },
-                child: const Text('Сохранить'),
-              ),
-            ],
-          ),
+              keyboardType: TextInputType.number,
+            ),
+            DropdownButton<String>(
+              value: _selectedType,
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  setState(() {
+                    _selectedType = newValue;
+                  });
+                }
+              },
+              items: <String>['Эскейп-румы', 'Квесты в реальности', 'Перформансы', 'Интерактивные квесты', 'Приключенческие квесты']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+            ElevatedButton(
+              onPressed: _addFearRoom,
+              child: const Text('Добавить'),
+            ),
+          ],
         ),
       ),
     );

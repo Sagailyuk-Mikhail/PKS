@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.pks1.app-mergeDebugResources-23:/values-ru/values-ru.xml",
+            "outputFile": "com.example.pks.app-mergeDebugResources-23:/values-ru/values-ru.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\sagai\\.gradle\\caches\\transforms-3\\eb175a205a3081c2bde0a5cc27a4c4f3\\transformed\\core-1.13.1\\res\\values-ru\\values-ru.xml",
+                    "source": "C:\\Users\\sagai\\.gradle\\caches\\transforms-3\\eef1e108c03e2b900dddcf206a3a5efa\\transformed\\core-1.13.1\\res\\values-ru\\values-ru.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",

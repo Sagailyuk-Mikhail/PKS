@@ -4,7 +4,7 @@
     "type": "PACKAGED_MANIFESTS",
     "kind": "Directory"
   },
-  "applicationId": "com.example.pks1",
+  "applicationId": "com.example.pks",
   "variantName": "debug",
   "elements": [
     {

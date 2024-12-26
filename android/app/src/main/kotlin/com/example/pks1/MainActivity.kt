@@ -1,4 +1,4 @@
-package com.example.pks1
+package com.example.pks
 
 import io.flutter.embedding.android.FlutterActivity
 

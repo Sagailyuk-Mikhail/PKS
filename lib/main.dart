@@ -1,12 +1,35 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Импортируем Firebase Auth
+import 'auth/auth_service.dart';
+import 'models/BasketItem.dart';
+import 'models/FearRoom.dart'; // Импортируем модель FearRoom
+import 'firebase_options.dart';
+import 'pages/RegisterPage.dart';
+import 'pages/LoginPage.dart';
 import 'pages/HomePage.dart';
+import 'pages/CartPage.dart';
 import 'pages/LikedPage.dart';
 import 'pages/ProfilePage.dart';
-import 'pages/CartPage.dart';
-import 'models/Note.dart';
 
-void main() {
-  runApp(const MyApp());
+List<BasketItem> cart = [];
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Инициализация Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => AuthService(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -14,24 +37,59 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+        textTheme: GoogleFonts.montserratTextTheme(),
+      ),
+      home: const AuthGate(), // Используем AuthGate для проверки аутентификации
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          if (snapshot.hasData) {
+            return const MyHome(); // Пользователь аутентифицирован
+          } else {
+            return const LoginPage(); // Пользователь не аутентифицирован
+          }
+        }
+        // Показать индикатор загрузки, если состояние еще не активно
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+  }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class MyHome extends StatefulWidget {
+  const MyHome({super.key});
+
+  @override
+  State<MyHome> createState() => _MyHomeState();
+}
+
+class _MyHomeState extends State<MyHome> {
   int _selectedIndex = 0;
-  final Set<FearRoom> likedGames = {};
-  final Set<FearRoom> cartItems = {};
+  late Set<FearRoom> likedGames;
+  late Set<FearRoom> cartItems;
+
+  @override
+  void initState() {
+    super.initState();
+    likedGames = {};
+    cartItems = {};
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -39,71 +97,28 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _toggleFavorite(FearRoom fearRoom) {
-    setState(() {
-      if (likedGames.contains(fearRoom)) {
-        likedGames.remove(fearRoom);
-      } else {
-        likedGames.add(fearRoom);
-      }
-    });
-  }
-
-  void _addToCart(FearRoom fearRoom) {
-    setState(() {
-      if (cartItems.contains(fearRoom)) {
-        fearRoom.amount++;
-      } else {
-        fearRoom.amount = 1;
-        cartItems.add(fearRoom);
-      }
-    });
-  }
-
-  void _removeFromCart(FearRoom fearRoom) {
-    setState(() {
-      if (fearRoom.amount > 1) {
-        fearRoom.amount--;
-      } else {
-        cartItems.remove(fearRoom);
-      }
-    });
-  }
-
-  void _deleteFromCart(FearRoom fearRoom) {
-    setState(() {
-      fearRoom.amount = 0;
-      cartItems.remove(fearRoom);
-    });
-  }
+  final List<Widget> _pages = [
+    HomePage(
+      likedGames: {},
+      cartItems: {},
+      onLikedToggle: (item) {},
+      onAddToCart: (item) {},
+    ),
+    LikedPage(),
+    CartPage(
+      cartItems: {},
+      onRemoveFromCart: (item) {},
+      onDeleteFromCart: (item) {},
+    ),
+    const ProfilePage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> _pages = [
-      HomePage(
-        likedGames: likedGames,
-        cartItems: cartItems,
-        onLikedToggle: _toggleFavorite,
-        onAddToCart: _addToCart,
-      ),
-      LikedPage(
-        likedGames: likedGames,
-        onLikedToggle: _toggleFavorite,
-        onAddToCart: _addToCart,
-      ),
-      CartPage(
-        cartItems: cartItems,
-        onRemoveFromCart: _removeFromCart,
-        onDeleteFromCart: _deleteFromCart,
-      ),
-      const ProfilePage(),
-    ];
-
     return Scaffold(
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed, // Изменено на fixed
-        items: const <BottomNavigationBarItem>[
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Главная',
@@ -122,8 +137,8 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: const Color(0xff504bff),
-        unselectedItemColor: Colors.grey, // Добавлено для улучшения видимости
+        unselectedItemColor: Colors.grey,
+        selectedItemColor: const Color(0xFF1A6FEE), // Цвет для выбранного элемента
         onTap: _onItemTapped,
       ),
     );

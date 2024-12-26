@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
-import '../models/Note.dart';
+import '../models/FearRoom.dart';
 import '../pages/AddFearRoomPage.dart';
 import '../pages/CartPage.dart';
-import '../pages/FearNotePage.dart';
-import '../components/item.dart';
+import '../api.dart';
+import '../pages/FearRoomDetailPage.dart';
+import '../templates/homePageCard.dart'; // Импорт виджета HomePageCard
 
 class HomePage extends StatefulWidget {
   final Set<FearRoom> likedGames;
   final Set<FearRoom> cartItems;
-  final Function(FearRoom) onLikedToggle;
-  final Function(FearRoom) onAddToCart;
+  final Function(FearRoom)? onLikedToggle;
+  final Function(FearRoom)? onAddToCart;
 
   const HomePage({
     Key? key,
     required this.likedGames,
     required this.cartItems,
-    required this.onLikedToggle,
-    required this.onAddToCart,
+    this.onLikedToggle,
+    this.onAddToCart,
   }) : super(key: key);
 
   @override
@@ -24,48 +25,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<FearRoom> fearRooms = [
-    FearRoom(
-      title: 'Арахнофобия',
-      description: 'Испытайте свои силы в комнате, полной пауков. Ваша задача — найти выход, преодолевая страх перед этими существами.',
-      imageUrl: 'https://avatars.mds.yandex.net/get-shedevrum/13672789/img_4fd2299ebc0711ef91b3eac5d837a6da/orig',
-      fullInfo: 'Испытайте свои силы в комнате, полной пауков. Ваша задача — найти выход, преодолевая страх перед этими существами.',
-      cost: 1000,
-      type: 'Эскейп-румы',
-    ),
-    FearRoom(
-      title: 'Клаустрофобия',
-      description: 'Попробуйте выбраться из замкнутого пространства, преодолевая страх перед теснотой и нехваткой воздуха.',
-      imageUrl: 'https://avatars.mds.yandex.net/get-shedevrum/15296012/img_5fce4c4abc0811efad090e7f2f591fdc/orig',
-      fullInfo: 'Попробуйте выбраться из замкнутого пространства, преодолевая страх перед теснотой и нехваткой воздуха.',
-      cost: 1200,
-      type: 'Квесты в реальности',
-    ),
-    FearRoom(
-      title: 'Агорафобия',
-      description: 'Проверьте свои нервы в открытом пространстве, где вам нужно найти выход, преодолевая страх перед пустотой.',
-      imageUrl: 'https://avatars.mds.yandex.net/get-shedevrum/15247898/img_e2cfa4bebc0811ef91b3eac5d837a6da/orig',
-      fullInfo: 'Проверьте свои нервы в открытом пространстве, где вам нужно найти выход, преодолевая страх перед пустотой.',
-      cost: 1500,
-      type: 'Перформансы',
-    ),
-    FearRoom(
-      title: 'Безумие Алисы',
-      description: 'Погрузитесь в мир загадок и иллюзий с квестом "Безумие Алисы", где границы реальности размыты.',
-      imageUrl: 'https://avatars.mds.yandex.net/get-shedevrum/14794476/img_2ac6a84bbc0911ef90fb7a1fca1a5260/orig',
-      fullInfo: 'Погрузитесь в мир загадок и иллюзий с квестом "Безумие Алисы", где границы реальности размыты.',
-      cost: 1800,
-      type: 'Интерактивные квесты',
-    ),
-    FearRoom(
-      title: 'Пиратский клад',
-      description: 'Отправьтесь в приключение по поиску пиратского клада с картой и головоломками.',
-      imageUrl: 'https://avatars.mds.yandex.net/get-shedevrum/15170052/img_908e4fd5bc0911efac8602fc262e3b4d/orig',
-      fullInfo: 'Отправьтесь в приключение по поиску пиратского клада с картой и головоломками.',
-      cost: 2000,
-      type: 'Приключенческие квесты',
-    ),
-  ];
+  late Future<List<FearRoom>> _fearRoomsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFearRooms();
+  }
+
+  void _loadFearRooms() {
+    setState(() {
+      _fearRoomsFuture = ApiService().getFearRooms();
+    });
+  }
 
   void _navigateToAddFearRoomPage(BuildContext context) async {
     final result = await Navigator.push(
@@ -77,20 +49,22 @@ class _HomePageState extends State<HomePage> {
 
     if (result != null && result.isNotEmpty) {
       setState(() {
-        fearRooms.add(result);
+        _loadFearRooms(); // Перезагружаем список комнат страха после добавления новой
       });
     }
   }
 
-  void addNewFearRoom(FearRoom newFearRoom) {
+  void addNewFearRoom(FearRoom newFearRoom) async {
+    await ApiService().addFearRoom(newFearRoom);
     setState(() {
-      fearRooms.add(newFearRoom);
+      _loadFearRooms(); // Перезагружаем список комнат страха после добавления новой
     });
   }
 
-  void _deleteFearRoom(int index) {
+  void _deleteFearRoom(FearRoom fearRoom) async {
+    await ApiService().deleteFearRoom(fearRoom.id!);
     setState(() {
-      fearRooms.removeAt(index);
+      _loadFearRooms(); // Перезагружаем список комнат страха после удаления
     });
   }
 
@@ -155,48 +129,53 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: fearRooms.isEmpty
-          ? const Center(child: Text('Пока что тут пусто, добавьте что-нибудь!'))
-          : GridView.builder(
-        padding: const EdgeInsets.all(8.0),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 8.0,
-          mainAxisSpacing: 8.0,
-          childAspectRatio: 0.6,
-        ),
-        itemCount: fearRooms.length,
-        itemBuilder: (context, index) {
-          final fearRoom = fearRooms[index];
-          return FearRoomWidget(
-            fearRoom: fearRoom,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FearRoomDetailPage(
-                    fearRoom: fearRoom,
-                    onDelete: () {
-                      _deleteFearRoom(index);
-                      Navigator.pop(context);
-                    },
-                    onAddToCart: () {
-                      widget.onAddToCart(fearRoom);
-                    },
-                  ),
-                ),
-              );
-            },
-            onFavoriteToggle: () {
-              setState(() {
-                fearRoom.isFavorite = !fearRoom.isFavorite;
-              });
-              widget.onLikedToggle(fearRoom);
-            },
-            onAddToCart: () {
-              widget.onAddToCart(fearRoom);
-            },
-          );
+      body: FutureBuilder<List<FearRoom>>(
+        future: _fearRoomsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return const Center(child: Text('Ошибка загрузки данных'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('Пока что тут пусто, добавьте что-нибудь!'));
+          } else {
+            List<FearRoom> fearRooms = snapshot.data!;
+            return GridView.builder(
+              padding: const EdgeInsets.all(8.0),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+                childAspectRatio: 0.6,
+              ),
+              itemCount: fearRooms.length,
+              itemBuilder: (context, index) {
+                final fearRoom = fearRooms[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FearRoomDetailPage(
+                          fearRoom: fearRoom,
+                          onDelete: () {
+                            _deleteFearRoom(fearRoom);
+                            Navigator.pop(context);
+                          },
+                          onAddToCart: () {
+                            if (widget.onAddToCart != null) {
+                              widget.onAddToCart!(fearRoom);
+                            }
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                  child: HomePageCard(item: fearRoom),
+                );
+              },
+            );
+          }
         },
       ),
       floatingActionButton: FloatingActionButton(

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import '../models/Note.dart';
+import '../main.dart';
+import '../templates/cartPageCard.dart';
+import '../api.dart';
+import '../models/BasketItem.dart';
+import '../models/FearRoom.dart';
 
 class CartPage extends StatefulWidget {
   final Set<FearRoom> cartItems;
@@ -9,149 +11,170 @@ class CartPage extends StatefulWidget {
   final Function(FearRoom) onDeleteFromCart;
 
   const CartPage({
-    Key? key,
+    super.key,
     required this.cartItems,
     required this.onRemoveFromCart,
     required this.onDeleteFromCart,
-  }) : super(key: key);
+  });
 
   @override
-  _CartPageState createState() => _CartPageState();
+  State<CartPage> createState() => _CartPageState();
 }
 
 class _CartPageState extends State<CartPage> {
-  void _incrementQuantity(FearRoom fearRoom) {
+  void removeItem(BasketItem item) {
     setState(() {
-      fearRoom.amount++;
+      cart.remove(item);
     });
   }
 
-  void _decrementQuantity(FearRoom fearRoom) {
+  void updateItemCount(BasketItem item, int newCount) {
     setState(() {
-      if (fearRoom.amount > 1) {
-        fearRoom.amount--;
-      }
+      item.count = newCount;
     });
   }
 
-  int _calculateTotal() {
-    return widget.cartItems.fold(0, (sum, item) => sum + (item.cost * item.amount));
+  void clearCart() {
+    setState(() {
+      cart.clear();
+    });
   }
 
-  void _showDeleteToast(String message) {
-    Fluttertoast.showToast(
-      msg: message,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      timeInSecForIosWeb: 1,
-      backgroundColor: Colors.red,
-      textColor: Colors.white,
-      fontSize: 16.0,
-    );
-  }
-
-  void _confirmDelete(FearRoom fearRoom) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Подтверждение удаления'),
-          content: Text('Вы уверены, что хотите удалить "${fearRoom.title}" из корзины?'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Отмена'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Закрыть диалог
-              },
-            ),
-            TextButton(
-              child: const Text('Удалить'),
-              onPressed: () {
-                widget.onDeleteFromCart(fearRoom); // Удалить товар
-                _showDeleteToast('Товар "${fearRoom.title}" удален из корзины');
-                Navigator.of(context).pop(); // Закрыть диалог
-              },
-            ),
-          ],
-        );
-      },
-    );
+  void _postToUserCart() async {
+    try {
+      await ApiService().postToUserCart(cart);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Ваш заказ успешно оформлен!'),
+          duration: const Duration(seconds: 5),
+          action: SnackBarAction(
+            label: 'Закрыть',
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            },
+          ),
+        ),
+      );
+      clearCart();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Ошибка отправки корзины: $e'),
+          duration: const Duration(seconds: 5),
+          action: SnackBarAction(
+            label: 'Закрыть',
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            },
+          ),
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final cartItemsList = widget.cartItems.toList();
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Корзина'),
-      ),
-      body: cartItemsList.isEmpty
-          ? const Center(child: Text('Ваша корзина пуста!'))
-          : Column(
+      body: Stack(
         children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: cartItemsList.length,
-              itemBuilder: (context, index) {
-                final fearRoom = cartItemsList[index];
-                return Slidable(
-                  endActionPane: ActionPane(
-                    motion: const ScrollMotion(),
-                    children: [
-                      SlidableAction(
-                        onPressed: (context) {
-                          // Показать диалог подтверждения удаления
-                          _confirmDelete(fearRoom);
-                        },
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                        icon: Icons.delete,
-                        label: 'Удалить',
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(top: 92, left: 27),
+                child: Text(
+                  "Корзина",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: cart.isEmpty
+                    ? const Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Корзина пуста",
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
+                    : ListView.builder(
+                  itemCount: cart.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(bottom: index == cart.length - 1 ? 0 : 16),
+                        child: Column(
+                          children: [
+                            CartPageCard(
+                              item: cart[index],
+                              onRemove: () => removeItem(cart[index]),
+                              onCountChange: (newCount) => updateItemCount(cart[index], newCount),
+                            ),
+                            if (index == cart.length - 1)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 30, bottom: 100),
+                                child: SizedBox(
+                                  width: MediaQuery.of(context).size.width * 0.81,
+                                  child: Row(
+                                    children: [
+                                      const Text(
+                                        "Сумма",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                        '${cart.map((item) => item.item.cost * item.count).reduce((value, element) => value + element)}₽',
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
-                    ],
-                  ),
-                  child: ListTile(
-                    leading: Image.network(
-                      fearRoom.imageUrl,
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
-                    ),
-                    title: Text(fearRoom.title),
-                    subtitle: Text('${fearRoom.cost} руб.'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.remove),
-                          onPressed: () => _decrementQuantity(fearRoom),
-                        ),
-                        Text('${fearRoom.amount}'),
-                        IconButton(
-                          icon: const Icon(Icons.add),
-                          onPressed: () => _incrementQuantity(fearRoom),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Общая сумма:',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          cart.isEmpty
+              ? const SizedBox()
+              : Positioned(
+            bottom: 30,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: ElevatedButton(
+                onPressed: _postToUserCart,
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xFF1A6FEE),
+                  minimumSize: const Size(335, 56),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
-                Text(
-                  '${_calculateTotal()} руб.',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                child: const Text(
+                  'Перейти к оформлению заказа',
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ],
+              ),
             ),
           ),
         ],

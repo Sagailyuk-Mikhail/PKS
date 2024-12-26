@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "143822341549",
+    "project_id": "quest-rooms-fb316",
+    "storage_bucket": "quest-rooms-fb316.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:143822341549:android:b7ee90ed8ac76ed2b60d24",
+        "android_client_info": {
+          "package_name": "com.example.pks"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDelxHc6w0TL0rFK5fh3P7mEJTzI7c5Y6w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
